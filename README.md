@@ -1,4 +1,5 @@
-#E conomic Wellbeing in Europe | SQL & Power BI
+# Economic Wellbeing in Europe | SQL & Power BI
+
 An exploratory project using European Social Survey (ESS) data to examine income, employment, wellbeing and public satisfaction.
 
 **Project objectives**
