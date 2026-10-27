@@ -1,6 +1,5 @@
 -- ESS_SQL_F1
---
-Inspecting the ESS 2016 dataset.
+--Inspecting the ESS 2016 dataset.
 -- The results are sorted first by country and then by region in descending order.
 
 select * from ess16
