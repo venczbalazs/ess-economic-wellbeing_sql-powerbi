@@ -3,11 +3,16 @@
 An exploratory project using European Social Survey (ESS) data to examine income, employment, wellbeing and public satisfaction.
 
 **Project objectives**
+
 •	Explore happiness and life satisfaction across countries and survey rounds.
+
 •	Examine how perceived household income relates to wellbeing.
+
 •	Explore public satisfaction across education categories.
+
 •	Prepare regional income and employment data for visualization in Power BI.
-Tools
+
+**Tools**
 •	Microsoft SQL Server and SQL Server Management Studio
 •	SQL for data preparation and exploratory analysis
 •	Power BI for the dashboard
