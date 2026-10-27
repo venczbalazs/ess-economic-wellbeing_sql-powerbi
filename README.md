@@ -12,6 +12,7 @@ An exploratory project using European Social Survey (ESS) data to examine income
 
 •	Prepare regional income and employment data for visualization in Power BI.
 
+
 **Tools**
 
 •	Microsoft SQL Server and SQL Server Management Studio
