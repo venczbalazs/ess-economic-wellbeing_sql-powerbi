@@ -149,6 +149,7 @@ having COUNT(*) >1;
 -- Invalid region codes are converted to NULL.
 -- Non-substantive domicile responses are also converted to NULL.
 
+GO
 CREATE VIEW ess_geography_rec AS
 SELECT
     name,
@@ -167,12 +168,14 @@ SELECT
         ELSE domicil
     END AS domicil
 FROM ess_geography;
+GO
 
 
 -- Creating a cleaned demographic view.
 -- Each CASE statement handles the special missing-value codes
 -- used for the corresponding demographic variable.
 
+GO
 CREATE VIEW ess_demographics_rec AS
 SELECT
     essround,
@@ -203,6 +206,7 @@ SELECT
         ELSE eiscedp
     END AS eiscedp
 FROM ess_demographics;
+GO
 
 
 -- Inspecting the raw unemployment variable before recoding.
@@ -216,6 +220,7 @@ where uemp3m in (7, 8, 9);
 -- Special ESS codes representing missing or non-substantive responses
 -- are replaced with SQL NULL values.
 
+GO
 create view ess_employment_rec AS
 SELECT
     essround,
@@ -250,6 +255,7 @@ SELECT
         ELSE uemp5yr
     END AS uemp5yr
 from ess_employment;
+GO
 
 
 -- Inspecting the raw household-income-source variable
@@ -263,6 +269,7 @@ where hincsrca IN (77, 88, 99);
 -- Invalid and non-substantive responses are converted to NULL
 -- while valid income information is retained.
 
+GO
 CREATE VIEW ess_income_rec AS
 SELECT
     essround,
@@ -281,12 +288,14 @@ SELECT
         ELSE hincfel
     END AS hincfel
 FROM ess_income;
+GO
 
 
 -- Creating a cleaned wellbeing view.
 -- Missing, refusal and "don't know" codes are replaced with NULL
 -- separately for each wellbeing and social-connectedness variable.
 
+GO
 CREATE VIEW ess_wellbeing_rec AS
 SELECT
     essround,
@@ -321,11 +330,13 @@ SELECT
         ELSE sclact
     END AS sclact
 FROM ess_wellbeing;
+GO
 
 
 -- Creating a cleaned public-assessments view.
 -- Invalid responses are converted to NULL before later analysis.
 
+GO
 CREATE VIEW ess_public_assessments_rec AS
 SELECT
     essround,
@@ -352,6 +363,7 @@ SELECT
         ELSE stfhlth
     END AS stfhlth
 FROM ess_public_assessments;
+GO
 
 
 -- Inspecting cleaned public-assessment observations for Hungary
@@ -365,9 +377,9 @@ order by stfeco desc;
 
 -- Inspecting missing values in the cleaned household-income-decile variable.
 
-select count(distinct hinctnta where is null) as total_hinctnta
- from ess_income_rec
-order by essround asc, cntry asc, hinctnta desc;
+select count(*) as missing_hinctnta
+from ess_income_rec
+where hinctnta is null;
 
 
 -- Creating an analytical view combining cleaned wellbeing and income data.
@@ -375,6 +387,7 @@ order by essround asc, cntry asc, hinctnta desc;
 -- country and respondent ID.
 -- The resulting data are aggregated by round, country and subjective income category.
 
+GO
 CREATE VIEW ess_wellbeing_by_inc_cntry AS
 select w.essround, w.cntry, i.hincfel,
 count(DISTINCT w.idno) as RespondentCount,
@@ -389,6 +402,7 @@ where i.hincfel is NOT NULL
  or w.happy is NOT NULL
   or w.stflife is NOT NULL
 group by w.essround, w.cntry, i.hincfel;
+GO
 
 
 -- Inspecting the newly created wellbeing-by-income view.
@@ -401,6 +415,7 @@ select * from ess_wellbeing_by_inc_cntry;
 -- to contain valid information rather than accepting cases
 -- where only one of them is available.
 
+GO
 alter VIEW ess_wellbeing_by_inc_cntry AS
 select w.essround, w.cntry, i.hincfel,
 count(DISTINCT w.idno) as RespondentCount,
@@ -415,6 +430,7 @@ where i.hincfel is NOT NULL
  and w.happy is NOT NULL
  and w.stflife is NOT NULL
 group by w.essround, w.cntry, i.hincfel;
+GO
 
 
 -- Inspecting the altered analytical view.
@@ -427,7 +443,7 @@ order by hincfel desc, essround desc;
 -- Inspecting the cleaned demographic data before creating
 -- the next analytical view.
 
-select *f from ess_demographics_rec;
+select * from ess_demographics_rec;
 
 
 -- Createing an analytical view combining education
@@ -435,6 +451,7 @@ select *f from ess_demographics_rec;
 -- Respondents are matched using round, country and respondent ID.
 -- The result contains one row per round, country and education category.
 
+GO
 create view ess_public_assessment_by_education AS
 select d.essround, d.cntry, d.eiscedp,
 count(distinct d.idno) as RespondentCount,
@@ -451,6 +468,7 @@ where d.eiscedp is NOT NULL
  and p.stfgov is NOT NULL
  and p.stfdem is NOT NULL
 group by d.essround, d.cntry, d.eiscedp;
+GO
 
 
 -- Inspecting the public-assessment-by-education view.
@@ -464,6 +482,7 @@ order by essround desc, eiscedp desc;
 -- Education categories 55 and 0 are additionally excluded
 -- while retaining the previous missing-value restrictions.
 
+GO
 alter view ess_public_assessment_by_education AS
 select d.essround, d.cntry, d.eiscedp,
 count(distinct d.idno) as RespondentCount,
@@ -482,6 +501,7 @@ AND d.eiscedp <> 55
  and p.stfgov is NOT NULL
  and p.stfdem is NOT NULL
 group by d.essround, d.cntry, d.eiscedp;
+GO
 
 
 -- Inspecting the altered education/public-assessment view.
@@ -495,6 +515,7 @@ order by essround desc, eiscedp desc;
 -- Unlike the previous analytical views, this view does not aggregate respondents.
 -- The same respondent is matched across the income and geography views.
 
+GO
 create view ess_income_with_region AS
 select i.essround, i.cntry, i.idno, i.hincfel, i.hinctnta,
 g.region, g.regunit
@@ -506,6 +527,7 @@ and i.idno=g.idno
 where g.region is not null 
 and (i.hincfel is NOT NULL
 or i.hinctnta is NOT NULL);
+GO
 
 
 -- Creating a more complex respondent-level analytical view.
@@ -517,6 +539,7 @@ or i.hinctnta is NOT NULL);
 -- Wellbeing information is retained when either happiness or life satisfaction is available,
 -- while health must always contain a valid value.
 
+GO
 create view ess_employment_wellbeing_demographics AS 
 select d.essround, d.cntry, d.idno, d.agea, d.gndr, d.eiscedp,
  e.mainact, e.emplrel, e.uemp12m,
@@ -535,3 +558,4 @@ and d.gndr is not null -- Get a list of tables and views in the current database
 and (e.mainact is NOT NULL or e.uemp12m is NOT NULL)
 and (w.happy is not null or w.stflife is not null)
 and w.health is not null;
+GO
