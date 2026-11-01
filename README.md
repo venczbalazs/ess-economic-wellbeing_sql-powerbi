@@ -1,4 +1,4 @@
-# Economic wellbeing in Europe | SQL Server and Power BI
+# Economic wellbeing in Europe | Survey data with SQL Server and Power BI
 
 How many respondents struggle to live on their household income? Do countries that rate their economy highly also rate their education system highly? This report explores those questions across four rounds of the European Social Survey (ESS), with **181,633 survey responses from 34 countries** across the four rounds.
 
